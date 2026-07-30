@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forktail — Philly Restaurant Picks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --orange: #FF5C35;
+            --orange-light: #FFF0EC;
+            --black: #111111;
+            --gray-1: #F7F7F5;
+            --gray-2: #EBEBEB;
+            --gray-3: #999;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--black);
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--gray-2);
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .logo span { color: var(--orange); }
+
+        .nav-badge {
+            font-size: 12px;
+            background: var(--orange-light);
+            color: var(--orange);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 80px 40px 60px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--orange);
+            background: var(--orange-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--orange);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(44px, 7vw, 80px);
+            font-weight: 800;
+            line-height: 1.0;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 em {
+            font-style: normal;
+            color: var(--orange);
+            position: relative;
+        }
+
+        .hero-sub {
+            font-size: 17px;
+            color: var(--gray-3);
+            max-width: 480px;
+            line-height: 1.65;
+            font-weight: 300;
+        }
+
+        /* ── STATS ROW ── */
+        .stats {
+            display: flex;
+            gap: 40px;
+            padding: 32px 40px;
+            max-width: 860px;
+            margin: 0 auto;
+            border-top: 1px solid var(--gray-2);
+            border-bottom: 1px solid var(--gray-2);
+        }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--gray-3);
+            margin-top: 2px;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .content {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 40px 80px;
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* ── FORM PANEL ── */
+        .form-panel {
+            position: sticky;
+            top: 24px;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--gray-1);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 28px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 9px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 7px;
+            cursor: pointer;
+            color: var(--gray-3);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--white);
+            color: var(--black);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        /* PANELS */
+        .panel { display: none; }
+        .panel.active { display: block; }
+
+        .field-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gray-3);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid var(--gray-2);
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 16px;
+        }
+
+        input[type="number"]:focus { border-color: var(--orange); }
+
+        .hint {
+            font-size: 12px;
+            color: var(--gray-3);
+            margin-bottom: 20px;
+        }
+
+        /* CUISINE CHIPS */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .chip {
+            padding: 7px 14px;
+            border: 1.5px solid var(--gray-2);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--white);
+        }
+
+        .chip:hover { border-color: var(--orange); color: var(--orange); }
+
+        .chip.on {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+        }
+
+        /* SUBMIT BUTTON */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--black);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover { background: #333; }
+
+        /* ── RESULTS PANEL ── */
+        .results-panel {}
+
+        .results-header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .results-count {
+            font-size: 13px;
+            color: var(--gray-3);
+        }
+
+        /* RESTAURANT CARD */
+        .rest-card {
+            border: 1.5px solid var(--gray-2);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            cursor: default;
+        }
+
+        .rest-card:hover {
+            border-color: var(--orange);
+            box-shadow: 0 4px 20px rgba(255, 92, 53, 0.08);
+        }
+
+        .rest-left { flex: 1; min-width: 0; }
+
+        .rest-rank {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--orange);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .rest-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .rest-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            background: var(--gray-1);
+            border-radius: 4px;
+            color: var(--gray-3);
+        }
+
+        .rest-score {
+            flex-shrink: 0;
+            margin-left: 20px;
+            text-align: right;
+        }
+
+        .score-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--orange);
+            letter-spacing: -0.02em;
+        }
+
+        .score-sub {
+            font-size: 10px;
+            color: var(--gray-3);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        /* STATES */
+        .state-empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--gray-3);
+        }
+
+        .state-empty .big { font-size: 40px; margin-bottom: 12px; }
+        .state-empty p { font-size: 15px; line-height: 1.6; }
+
+        .state-loading {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 32px; height: 32px;
+            border: 3px solid var(--gray-2);
+            border-top-color: var(--orange);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .state-loading p { font-size: 14px; color: var(--gray-3); }
+
+        .error-box {
+            background: #FFF5F5;
+            border: 1.5px solid #FECACA;
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: #DC2626;
+            font-size: 14px;
+        }
+
+        @media (max-width: 680px) {
+            nav { padding: 16px 20px; }
+            .hero { padding: 48px 20px 40px; }
+            .stats { padding: 24px 20px; gap: 24px; flex-wrap: wrap; }
+            .content { grid-template-columns: 1fr; padding: 32px 20px 60px; }
+            .form-panel { position: static; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="logo">Fork<span>tail</span></div>
+    <div class="nav-badge">Philadelphia · NCF Model</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-tag">Live recommendations</div>
+    <h1>Your next meal<br>starts <em>here.</em></h1>
+    <p class="hero-sub">A restaurant recommender trained on 1M+ Yelp reviews. Enter your ID for personalised picks — or tell us what you're craving.</p>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div>
+        <div class="stat-num">1M+</div>
+        <div class="stat-label">Yelp reviews trained on</div>
+    </div>
+    <div>
+        <div class="stat-num">870</div>
+        <div class="stat-label">Philadelphia restaurants</div>
+    </div>
+    <div>
+        <div class="stat-num">0.97</div>
+        <div class="stat-label">RMSE on held-out data</div>
+    </div>
+    <div>
+        <div class="stat-num">NCF</div>
+        <div class="stat-label">Neural collaborative filtering</div>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <!-- FORM -->
+    <div class="form-panel">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('returning', this)">Returning user</button>
+            <button class="tab" onclick="switchTab('new', this)">New here</button>
+        </div>
+
+        <!-- Returning user -->
+        <div class="panel active" id="panel-returning">
+            <label class="field-label">Your user ID</label>
+            <input type="number" id="userIdx" placeholder="Try 0, 100, 2654…" min="0">
+            <p class="hint">Your ID maps to a learned taste profile from your Yelp history.</p>
+            <button class="btn" onclick="getNCFRecs()">
+                Get my picks <span>→</span>
+            </button>
+        </div>
+
+        <!-- New user -->
+        <div class="panel" id="panel-new">
+            <label class="field-label">What are you craving?</label>
+            <div class="chips" id="chips"></div>
+            <p class="hint" style="margin-bottom:20px;">Tap cuisines to select · tap again to remove</p>
+            <button class="btn" onclick="getColdRecs()">
+                Find restaurants <span>→</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-panel" id="results">
+        <div class="state-empty">
+            <div class="big">🍽️</div>
+            <p>Your recommendations<br>will appear here.</p>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://127.0.0.1:8000';
+    const selected = new Set();
+
+    const FEATURED = ['Italian','Mexican','Chinese','American','Japanese','Indian','Mediterranean','Thai','Pizza','Seafood','Burgers','Sushi','Sandwiches','Coffee & Tea','Bakeries','Bars','French','Korean','Vietnamese','Greek'];
+
+    async function loadCuisines() {
+        try {
+            const res = await fetch(`${API}/cuisines`);
+            const { cuisines } = await res.json();
+            const show = FEATURED.filter(c => cuisines.includes(c))
+                .concat(cuisines.filter(c => !FEATURED.includes(c)).slice(0, 10));
+            document.getElementById('chips').innerHTML = show.map(c =>
+                `<div class="chip" onclick="toggleChip(this,'${c}')">${c}</div>`
+            ).join('');
+        } catch(e) {}
+    }
+
+    function toggleChip(el, c) {
+        el.classList.toggle('on');
+        selected.has(c) ? selected.delete(c) : selected.add(c);
+    }
+
+    function switchTab(tab, btn) {
+        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-returning').classList.toggle('active', tab === 'returning');
+        document.getElementById('panel-new').classList.toggle('active', tab === 'new');
+        document.getElementById('results').innerHTML = `<div class="state-empty"><div class="big">🍽️</div><p>Your recommendations<br>will appear here.</p></div>`;
+    }
+
+    async function getNCFRecs() {
+        const val = document.getElementById('userIdx').value.trim();
+        if (!val) return showError('Enter a user ID to continue.');
+        showLoading();
+        try {
+            const res = await fetch(`${API}/recommend`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_idx: parseInt(val), top_n: 10 })
+            });
+            if (res.status === 404) return showError('User ID not found. Try 0, 100, or 2654.');
+            if (!res.ok) return showError('Something went wrong. Try again.');
+            const { recommendations } = await res.json();
+            renderResults(recommendations, 'Picked for you');
+        } catch(e) {
+            showError('Cannot reach the API — is the server running?');
+        }
+    }
+
+    async function getColdRecs() {
+        if (!selected.size) return showError('Select at least one cuisine.');
+        showLoading();
+        try {
+            const res = await fetch(`${API}/recommend/coldstart`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cuisines: [...selected], top_n: 10 })
+            });
+            if (!res.ok) return showError('Something went wrong. Try again.');
+            const { recommendations } = await res.json();
+            renderResults(recommendations, `Top ${[...selected].slice(0,2).join(' & ')} picks`);
+        } catch(e) {
+            showError('Cannot reach the API — is the server running?');
+        }
+    }
+
+    function renderResults(recs, title) {
+        if (!recs?.length) return showError('No restaurants found for that selection.');
+        document.getElementById('results').innerHTML = `
+            <div class="results-header">
+                <span class="results-title">${title}</span>
+                <span class="results-count">${recs.length} results</span>
+            </div>
+            ${recs.map((r, i) => {
+                const tags = (r.categories || '').split(', ').slice(0,3);
+                return `
+                <div class="rest-card">
+                    <div class="rest-left">
+                        <div class="rest-rank">No. ${i + 1}</div>
+                        <div class="rest-name">${r.name}</div>
+                        <div class="rest-tags">${tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+                    </div>
+                    <div class="rest-score">
+                        <div class="score-num">${r.score ? r.score.toFixed(1) : r.stars}</div>
+                        <div class="score-sub">score</div>
+                    </div>
+                </div>`;
+            }).join('')}
+        `;
+    }
+
+    function showLoading() {
+        document.getElementById('results').innerHTML = `
+            <div class="state-loading">
+                <div class="spinner"></div>
+                <p>Finding the best spots…</p>
+            </div>`;
+    }
+
+    function showError(msg) {
+        document.getElementById('results').innerHTML = `<div class="error-box">⚠️ ${msg}</div>`;
+    }
+
+    loadCuisines();
+</script>
+</body>
+</html>
