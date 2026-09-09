@@ -56,7 +56,7 @@ num_users = df_philly['user_idx'].nunique()
 num_restaurants = df_philly['business_idx'].nunique()
 
 model = NCF(num_users, num_restaurants)
-model.load_state_dict(torch.load('model_weights.pth', map_location='cpu'))
+model.load_state_dict(torch.load('best_bpr_model.pth', map_location='cpu'))
 model.eval()
 
 class RecommendRequest(BaseModel):
