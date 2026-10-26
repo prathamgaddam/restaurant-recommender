@@ -1,4 +1,5 @@
 # Philadelphia Restaurant Recommender
+**GitHub:** [github.com/prathamgaddam/restaurant-recommender](https://github.com/prathamgaddam/restaurant-recommender)
 
 A multi-level restaurant recommendation system trained on 1M+ Yelp reviews, served via a FastAPI REST API with a content-based fallback for new users.
 
